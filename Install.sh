@@ -42,7 +42,9 @@ echo "127.0.0.1	localhost" >> /etc/hosts
 echo "::1	      localhost" >> /etc/hosts
 echo "127.0.1.1	Arxchel.xch   Arxchel" >> /etc/hosts
 
-pacman -S intel-ucode efibootmgr grub
+pacman -S intel-ucode xorg mesa xf86-video-nouveau lightdm awesome ddrescue efibootmgr grub
+systemctl enable NetworkManager
+systemctl enable lightdm
 
 mkinitcpio -P
 
