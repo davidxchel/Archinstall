@@ -104,7 +104,7 @@ if [ $swapp != "n" ]; then
     check $?
 fi
 
-pacstrap /mnt base linux linux-firmware linux-headers vim man-db man-pages texinfo networkmanager coreutils binutils git
+pacstrap /mnt base linux linux-firmware linux-headers man-db man-pages texinfo
 check $?
 cd /mnt
 git clone https://github.com/davidxchel/Archinstall
