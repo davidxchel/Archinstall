@@ -79,7 +79,6 @@ fi
 good
 
 echo "Do you wish to format everything?[Y,n]"
-
 read R
 
 if [ $R != "n" -a $R != "N" ]; then
@@ -106,4 +105,5 @@ cd /
 genfstab -U /mnt >> /mnt/etc/fstab
 cat /mnt/etc/fstab
 echo "Check if there is a problem here, if not, proceed using arch-chroot /mnt
-Then use /Archinstall/configure.sh to configure my minimal arch install Bye!"
+Then use /Archinstall/configure.sh to configure my minimal arch install"
+Final: "Program finished, Bye!"
