@@ -84,21 +84,28 @@ read R
 if [ $R != "n" -a $R != "N" ]; then
     echo "Formatting..."
     mkfs.fat -F32 /dev/$disk$efip;
+    check $?
     mkfs.ext4     /dev/$disk$rootp;
+    check $?
 fi
 
 if [ $swapp != "n" ]; then
     mkswap        /dev/$disk$swapp;
+    check $?
 fi
 
 mount         /dev/$disk$rootp /mnt
+check $?
 mkdir         /mnt/efi
 mount         /dev/$disk$efip /mnt/efi
+check $?
 if [ $swapp != "n" ]; then
     swapon        /dev/$disk$swapp
+    check $?
 fi
 
 pacstrap /mnt base linux linux-firmware linux-headers vim man-db man-pages texinfo networkmanager coreutils binutils git
+check $?
 cd /mnt
 git clone https://github.com/davidxchel/Archinstall
 cd /
