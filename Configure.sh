@@ -1,8 +1,46 @@
 #!/bin/bash
 
+check () {
+    if [ $1 != 0 ]; then
+        echo "Last command did not end well, exiting"
+        goto Final
+    fi
+}
+
+good () {
+    echo "All good?[Y,n]"
+    read R
+    if [ $R == "n" -o $R == "N" ]; then
+        goto Final
+    fi
+}
+
 cd /
-ln -sf /usr/share/zoneinfo/America/Mexico_City /etc/localtime
+ls -d /usr/share/zoneinfo/*/
+echo "What is your area?(Use name only, with capitals)"
+read area
+if [ $? != 0 ]; then
+    echo "Not understood, using America"
+    area = America
+fi
+ls -d /usr/share/zoneinfo/$area/*/
+echo "What is your city?(Use name only, with capitals)"
+read city
+if [ $? != 0 ]; then
+    echo "Not understood, using Mexico_City"
+    city = Mexico_City
+fi
+
+ln -sf /usr/share/zoneinfo/$area/$city /etc/localtime
+check $?
 hwclock --systohc
+check $?
+
+
+
+
+
+
 
 vim /etc/locale.gen
 locale-gen
@@ -35,3 +73,5 @@ input("All good? (Ctrl-C if not)")
 grub-install --target=x86_64-efi --efi-directory=/efi --removable --bootloader-id=GRUB
 input("All good? (Ctrl-C if not)")
 grub-mkconfig -o /boot/grub/grub.cfg
+
+Final: echo "Program finished, Bye!"
