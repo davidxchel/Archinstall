@@ -1,71 +1,109 @@
 #!/bin/bash
 
+check () {
+    if [ $1 != 0 ]; then
+        echo "Last command did not end well, exiting"
+        goto Final
+    fi
+}
+
+good () {
+    echo "All good?[Y,n]"
+    read R
+    if [ $R == "n" -o $R == "N" ]; then
+        goto Final
+    fi
+}
+
 cd /
-loadkeys la-latin1;
-iwctl;
-input("All good? (Ctrl-C if not)")
-timedatectl set-ntp true;
-fdisk -l;
-echo "Which Disk are you going to use?(sdx)
-(For now this program only uses the first three partitions as:
-esp, root, swap)";
-UD = input("Disk: ");
-fdisk -l /dev/${UD}
+echo "Do you want to use la-latin1 keys?[Y,n]"
+read R
+if [ $R == "n" -o $R == "N" ]; then
+    echo "Which one do you want?"
+    read R
+else
+    R = la-latin1
+fi
+echo "Using $R"
+loadkeys $R
+echo "Checking keys"
+check $?
+
+timedatectl set-ntp true
+lsblk
+fdisk -l
+echo "Which disk are you going to use? (in sdx format)"
+read disk
+echo "Disk:"
+fdisk -l /dev/$disk
+echo "Checking disk"
+check $?
+
+echo "Which partition are you going to use for the EFI? (just the number)
+Note: This has to start in the sector number 2048 and be at least 250 MB
+If you do not wish to continue put any letter here!"
+read efip
+echo "EFI partition:"
+fdisk -l /dev/$disk$efip
+echo "Checking partition"
+check $?
+
+echo "Disk:"
+fdisk -l /dev/$disk
+echo "Which partition are you going to use for the ROOT? (just the number)"
+read rootp
+echo "ROOT partition:"
+fdisk -l /dev/$disk$rootp
+echo "Checking partition"
+check $?
+
+echo "Disk:"
+fdisk -l /dev/$disk
+echo "Which partition are you going to use for the SWAP? (just the number)"
+read swapp
+echo "SWAP partition:"
+fdisk -l /dev/$disk$swapp
+echo "Checking partition"
+if [ $? != 0 ]; then
+    echo "No swap for this one"
+    swapp = n
+fi
+
 echo "The partitions used are going to be:
-EFI system partition: /dev/${UD}1
-Root: /dev/${UD}2
-Swap: /dev/${UD}3";
-input("All good? (Ctrl-C if not)")
+EFI system partition: /dev/$disk$efip
+Root: /dev/$disk$rootp"
+if [ $swapp != "n" ]; then
+    echo "Swap: /dev/$disk$swapp"
+fi
 
-mkfs.fat -F32 /dev/${UD}1;
-mkfs.ext4     /dev/${UD}2;
-mkswap        /dev/${UD}3;
-input("All good? (Ctrl-C if not)")
+good
 
-mount         /dev/${UD}2 /mnt
+echo "Do you wish to format everything?[Y,n]"
+
+read R
+
+if [ $R != "n" -a $R != "N" ]; then
+    echo "Formatting..."
+    mkfs.fat -F32 /dev/$disk$efip;
+    mkfs.ext4     /dev/$disk$rootp;
+fi
+
+if [ $swapp != "n" ]; then
+    mkswap        /dev/$disk$swapp;
+fi
+
+mount         /dev/$disk$rootp /mnt
 mkdir         /mnt/efi
-mount         /dev/${UD}1 /mnt/efi
-swapon        /dev/${UD}3
-input("All good? (Ctrl-C if not)")
+mount         /dev/$disk$efip /mnt/efi
+if [ $swapp != "n" ]; then
+    swapon        /dev/$disk$swapp
+fi
 
-pacstrap /mnt base linux linux-firmware vim linux-headers man-db man-pages texinfo networkmanager coreutils
+pacstrap /mnt base linux linux-firmware linux-headers vim man-db man-pages texinfo networkmanager coreutils binutils git
+cd /mnt
+git clone https://github.com/davidxchel/Archinstall
+cd /
 genfstab -U /mnt >> /mnt/etc/fstab
 cat /mnt/etc/fstab
-input("All good? (Ctrl-C if not)")
-
-arch-chroot /mnt
-
-ln -sf /usr/share/zoneinfo/America/Mexico_City /etc/localtime
-hwclock --systohc
-
-vim /etc/locale.gen
-locale-gen
-echo "LANG=en_US.UTF-8" >> /etc/locale.conf
-cat /etc/locale.conf
-input("All good? (Ctrl-C if not)")
-
-echo "KEYMAP=la-latin1" >> vim /etc/vconsole.conf
-cat /etc/vconsole.conf
-input("All good? (Ctrl-C if not)")
-
-echo Arxchel >> /etc/hostname
-cat /etc/hostname
-input("All good? (Ctrl-C if not)")
-
-echo "127.0.0.1	localhost" >> /etc/hosts
-echo "::1	      localhost" >> /etc/hosts
-echo "127.0.1.1	Arxchel.xch   Arxchel" >> /etc/hosts
-cat /etc/hosts
-input("All good? (Ctrl-C if not)")
-
-pacman -S intel-ucode xorg mesa xf86-video-nouveau lightdm git awesome ddrescue efibootmgr grub
-systemctl enable NetworkManager
-systemctl enable lightdm
-input("All good? (Ctrl-C if not)")
-
-mkinitcpio -P
-input("All good? (Ctrl-C if not)")
-
-grub-install --target=x86_64-efi --efi-directory=/efi --removable --bootloader-id=GRUB
-input("All good? (Ctrl-C if not)")
-grub-mkconfig -o /boot/grub/grub.cfg
+echo "Check if there is a problem here, if not, proceed using arch-chroot /mnt
+Then use /Archinstall/configure.sh to configure my minimal arch install Bye!"
