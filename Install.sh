@@ -108,6 +108,7 @@ pacstrap /mnt base linux linux-firmware linux-headers vim man-db man-pages texin
 check $?
 cd /mnt
 git clone https://github.com/davidxchel/Archinstall
+chmod +x /mnt/Archinstall/Configure.sh
 cd /
 genfstab -U /mnt >> /mnt/etc/fstab
 cat /mnt/etc/fstab
