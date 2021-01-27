@@ -70,15 +70,22 @@ echo "You should see the local hosts and host name"
 good
 
 echo "This only installs everything necesary for a pc with intel processors
-and nvidia GPU, it installs the free \"Nouveau\" drivers with the plasma environment
-and lightdm display manager for efi driven computers. It also installs the lts linux version"
+and nvidia GPU, it installs the free \"Nouveau\" drivers for efi driven computers.
+It also installs the lts linux version"
 good
 pacman -Syyu
-pacman -S intel-ucode xorg mesa xf86-video-nouveau plasma lightdm{,-gtk-greeter{,-settings}} efibootmgr grub
+pacman -S intel-ucode xorg mesa xf86-video-nouveau efibootmgr grub
 pacman -S linux-lts linux-lts-headers nvidia-utils base-devel net-tools
 pacman -S git ddrescue vim networkmanager coreutils linux-tools curl wget
+echo "Do you want a desktop environment?(The one used here is plasma with lightdm)[Y,n]"
+read R
+if [ $R != "n" -a $R != "N" ]; then
+  pacman -S plasma lightdm{,-gtk-greeter{,-settings}}
+  pacman -R sddm-kcm
+  pacman -R sddm
+  systemctl enable lightdm
+fi
 systemctl enable NetworkManager
-systemctl enable lightdm
 good
 
 mkinitcpio -P
