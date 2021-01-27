@@ -75,7 +75,7 @@ It also installs the lts linux version"
 good
 pacman -Syyu
 pacman -S intel-ucode xorg mesa xf86-video-nouveau efibootmgr grub
-pacman -S linux-lts linux-lts-headers nvidia-utils base-devel net-tools
+pacman -S linux-lts linux-lts-headers base-devel net-tools ntfs-3g
 pacman -S git ddrescue vim networkmanager coreutils linux-tools curl wget kitty
 echo "Do you want a desktop environment?(The one used here is plasma with lightdm)[Y,n]"
 read R
@@ -105,7 +105,7 @@ echo "Do you want a kickass fallout grub theme?(Not mine)[N,y]"
 read R
 
 if [ $R == "y" -o $R == "Y" ]; then
-  grub-install --target=x86_64-efi --efi-directory=/efi --removable --bootloader-id=GRUB
+  wget -O - https://github.com/shvchk/fallout-grub-theme/raw/master/install.sh | bash
 fi
 good
 
