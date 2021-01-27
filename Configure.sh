@@ -76,7 +76,7 @@ good
 pacman -Syyu
 pacman -S intel-ucode xorg mesa xf86-video-nouveau efibootmgr grub
 pacman -S linux-lts linux-lts-headers nvidia-utils base-devel net-tools
-pacman -S git ddrescue vim networkmanager coreutils linux-tools curl wget
+pacman -S git ddrescue vim networkmanager coreutils linux-tools curl wget kitty
 echo "Do you want a desktop environment?(The one used here is plasma with lightdm)[Y,n]"
 read R
 if [ $R != "n" -a $R != "N" ]; then
