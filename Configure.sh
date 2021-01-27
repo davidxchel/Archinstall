@@ -151,5 +151,5 @@ And add:
     ILoveCandy ---------- in /etc/pacman.conf
     cows to /usr/share/cows
 "
-
+rm -r /Archinstall
 Final: echo "Program finished, Bye!"
