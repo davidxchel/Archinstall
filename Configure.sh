@@ -156,7 +156,7 @@ And add:
     asciiquarium, cowsay, fortune-mod, sl, oneko
     uncomment the multilib ----- in /etc/pacman.conf
     ILoveCandy ---------- in /etc/pacman.conf
-    cows to /usr/share/cows
+    cows to /usr/share/cows from https://github.com/paulkaefer/cowsay-files
 "
 rm -r /Archinstall
 Final: echo "Program finished, Bye!"
