@@ -8,7 +8,7 @@
 alias ls='ls --color=auto'
 alias grub-update="sudo grub-mkconfig -o /boot/grub/grub.cfg"
 alias sudo='cowsay -f tux "If you have the power to continue, use it wisely"; sudo'
-PS1='\e[01;32m\]<o__o> `uname -sr`\n  \e[01;35m\~> \d @ \w\n   \e[01;34m\~> \u@\h\$ \e[01;36m'
+PS1='\e[01;32m\]<o__o> Arch`uname -sr`\n  \e[01;35m\~> \d @ \w\n   \e[01;34m\~> \u@\h\$ \e[01;36m'
 
 export Programs='/home/xchel/Documents/softshell'
 export Silicon='/home/xchel/Documents/Silicio'
