@@ -38,8 +38,7 @@ check $?
 
 echo "English locale will be used
 If you want another, please change the files /etc/locale.gen and /etc/locale.conf accordingly"
-echo "en_US.UTF-8 UTF-8
-en_US ISO-8859-1" >> /etc/locale.gen
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 cat /etc/locale.conf
@@ -80,7 +79,7 @@ pacman -S git ddrescue vim networkmanager coreutils linux-tools curl wget kitty
 echo "Do you want a desktop environment?(The one used here is plasma with lightdm)[Y,n]"
 read R
 if [ $R != "n" -a $R != "N" ]; then
-  pacman -S plasma lightdm{,-gtk-greeter{,-settings}}
+  pacman -S plasma lightdm-webkit2-greeter
   pacman -R sddm-kcm
   pacman -R sddm
   systemctl enable lightdm
