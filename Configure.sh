@@ -79,7 +79,7 @@ pacman -S git ddrescue vim networkmanager coreutils linux-tools curl wget kitty
 echo "Do you want a desktop environment?(The one used here is plasma with lightdm)[Y,n]"
 read R
 if [ $R != "n" -a $R != "N" ]; then
-  pacman -S plasma lightdm-webkit2-greeter
+  pacman -S plasma lightdm{,-{gtk,webkit2}-greeter}
   pacman -R sddm-kcm
   pacman -R sddm
   systemctl enable lightdm
@@ -156,6 +156,7 @@ And add:
     uncomment the multilib ----- in /etc/pacman.conf
     ILoveCandy ---------- in /etc/pacman.conf
     cows to /usr/share/cows from https://github.com/paulkaefer/cowsay-files
+    cbonsai asciiquarium
 "
 rm -r /Archinstall
 Final: echo "Program finished, Bye!"
