@@ -3,7 +3,7 @@
 check () {
     if [ $1 != 0 ]; then
         echo "Last command did not end well, exiting"
-        goto Final
+        exit 2
     fi
 }
 
@@ -11,7 +11,7 @@ good () {
     echo "All good?[Y,n]"
     read R
     if [ $R == "n" -o $R == "N" ]; then
-        goto Final
+        exit 1
     fi
 }
 
@@ -114,4 +114,4 @@ genfstab -U /mnt >> /mnt/etc/fstab
 cat /mnt/etc/fstab
 echo "Check if there is a problem here, if not, proceed using arch-chroot /mnt
 Then use /Archinstall/configure.sh to configure my minimal arch install"
-Final: "Program finished, Bye!"
+echo "Program finished, Bye!"
