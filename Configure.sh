@@ -3,7 +3,7 @@
 check () {
   if [ $1 != 0 ]; then
     echo "Last command did not end well, exiting"
-    exit 1
+    exit 2
   fi
 }
 
