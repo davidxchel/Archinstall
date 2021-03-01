@@ -1,0 +1,11 @@
+git
+ddrescue
+vim
+networkmanager
+coreutils
+linux-tools
+curl
+wget
+kitty
+plasma-desktop
+lightdm{,-{gtk,webkit2}-greeter}
