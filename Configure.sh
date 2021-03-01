@@ -69,14 +69,13 @@ echo "You should see the local hosts and host name"
 good
 
 echo "This only installs everything necesary for an efi driven pc
-it will install video drivers and it installs the lts linux version"
+it will install video drivers and it installs the lts linux version
+(You can change the system and software files)"
 good
-pacman -Syyu
-pacman -S intel-ucode xorg mesa efibootmgr grub
-pacman -S linux-lts linux-lts-headers base-devel net-tools ntfs-3g
-pacman -S git ddr
-echo "Do you want a desktop environment?(The one used here is plasma with lightdm)[Y,n]"
-read R
+
+sudo pacman -Syyu
+sudo pacman -S `cat system`
+yay -S `cat software`
 if [ $R != "n" -a $R != "N" ]; then
   pacman -S plasma lightdm{,-{gtk,webkit2}-greeter}
   pacman -R sddm-kcm
