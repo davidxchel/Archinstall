@@ -16,14 +16,14 @@ good () {
 }
 
 cd /
-ls -d /usr/share/zoneinfo/*/
+ls -d /usr/share/zoneinfo/**/
 echo "What is your area?(Use name only, with capitals)"
 read area
 if [ $? != 0 ]; then
   echo "Not understood, using America"
   area = America
 fi
-ls -d /usr/share/zoneinfo/$area/*/
+ls -d /usr/share/zoneinfo/$area/**/
 echo "What is your city?(Use name only, with capitals)"
 read city
 if [ $? != 0 ]; then
@@ -36,8 +36,8 @@ check $?
 hwclock --systohc
 check $?
 
-echo "English locale will be used
-If you want another, please change the files /etc/locale.gen and /etc/locale.conf accordingly"
+echo "English locale and latin keyboard will be used
+If you want another, please change the files /etc/locale.gen, /etc/locale.conf and /etc/vconsole.conf accordingly"
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
@@ -45,7 +45,7 @@ cat /etc/locale.conf
 echo "You should see the language of the locale"
 good
 
-echo "KEYMAP=`localectl status | grep -i key | cut -d " " -f 10-`" > /etc/vconsole.conf
+echo "KEYMAP=la-latin1" > /etc/vconsole.conf
 cat /etc/vconsole.conf
 echo "You should see the keyboard map"
 good
@@ -63,19 +63,18 @@ echo "# Static table lookup for hostnames.
 # See hosts(5) for details.
 127.0.0.1	localhost
 ::1	     localhost
-127.0.1.1	$HN.HD   HN" > /etc/hosts
+127.0.1.1	${HN}.${HD}   ${HN}" > /etc/hosts
 cat /etc/hosts
 echo "You should see the local hosts and host name"
 good
 
-echo "This only installs everything necesary for a pc with intel processors
-and nvidia GPU, it installs the free \"Nouveau\" drivers for efi driven computers.
-It also installs the lts linux version"
+echo "This only installs everything necesary for an efi driven pc
+it will install video drivers and it installs the lts linux version"
 good
 pacman -Syyu
-pacman -S intel-ucode xorg mesa xf86-video-nouveau efibootmgr grub
+pacman -S intel-ucode xorg mesa efibootmgr grub
 pacman -S linux-lts linux-lts-headers base-devel net-tools ntfs-3g
-pacman -S git ddrescue vim networkmanager coreutils linux-tools curl wget kitty
+pacman -S git ddr
 echo "Do you want a desktop environment?(The one used here is plasma with lightdm)[Y,n]"
 read R
 if [ $R != "n" -a $R != "N" ]; then
