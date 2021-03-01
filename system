@@ -1,6 +1,3 @@
-intel-ucode
-xorg
-mesa
 efibootmgr
 grub
 linux-lts{,-headers}
