@@ -1,0 +1,10 @@
+intel-ucode
+xorg
+mesa
+efibootmgr
+grub
+linux-lts{,-headers}
+base-devel
+net-tools
+ntfs-3g
+amd-ucode
