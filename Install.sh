@@ -32,10 +32,10 @@ check $?
 timedatectl set-ntp true
 lsblk
 fdisk -l
-echo "Which disk are you going to use? (in sdx format)"
+echo "Which disk are you going to use? (just the letter)"
 read disk
 echo "Disk:"
-fdisk -l /dev/$disk
+fdisk -l /dev/s$disk
 echo "Checking disk"
 check $?
 
@@ -44,25 +44,25 @@ Note: This has to start in the sector number 2048 and be at least 250 MB
 If you do not wish to continue put any letter here!"
 read efip
 echo "EFI partition:"
-fdisk -l /dev/$disk$efip
+fdisk -l /dev/s$disk$efip
 echo "Checking partition"
 check $?
 
 echo "Disk:"
-fdisk -l /dev/$disk
+fdisk -l /dev/s$disk
 echo "Which partition are you going to use for the ROOT? (just the number)"
 read rootp
 echo "ROOT partition:"
-fdisk -l /dev/$disk$rootp
+fdisk -l /dev/s$disk$rootp
 echo "Checking partition"
 check $?
 
 echo "Disk:"
-fdisk -l /dev/$disk
+fdisk -l /dev/s$disk
 echo "Which partition are you going to use for the SWAP? (just the number)"
 read swapp
 echo "SWAP partition:"
-fdisk -l /dev/$disk$swapp
+fdisk -l /dev/s$disk$swapp
 echo "Checking partition"
 if [ $? != 0 ]; then
     echo "No swap for this one"
@@ -70,10 +70,10 @@ if [ $? != 0 ]; then
 fi
 
 echo "The partitions used are going to be:
-EFI system partition: /dev/$disk$efip
-Root: /dev/$disk$rootp"
+EFI system partition: /dev/s$disk$efip
+Root: /dev/s$disk$rootp"
 if [ $swapp != "n" ]; then
-    echo "Swap: /dev/$disk$swapp"
+    echo "Swap: /dev/s$disk$swapp"
 fi
 
 good
@@ -83,24 +83,24 @@ read R
 
 if [ $R != "n" -a $R != "N" ]; then
     echo "Formatting..."
-    mkfs.fat -F32 /dev/$disk$efip;
+    mkfs.fat -F32 /dev/s$disk$efip;
     check $?
-    mkfs.ext4     /dev/$disk$rootp;
+    mkfs.btrfs    /dev/s$disk$rootp;
     check $?
 fi
 
 if [ $swapp != "n" ]; then
-    mkswap        /dev/$disk$swapp;
+    mkswap    /dev/s$disk$swapp;
     check $?
 fi
 
-mount         /dev/$disk$rootp /mnt
+mount         /dev/s$disk$rootp /mnt
 check $?
 mkdir         /mnt/efi
-mount         /dev/$disk$efip /mnt/efi
+mount         /dev/s$disk$efip /mnt/efi
 check $?
 if [ $swapp != "n" ]; then
-    swapon        /dev/$disk$swapp
+    swapon    /dev/s$disk$swapp
     check $?
 fi
 
