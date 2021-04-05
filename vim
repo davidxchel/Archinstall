@@ -29,7 +29,6 @@ set shiftwidth=3
 set smartindent
 set smarttab
 set softtabstop=3
-set expandtab
  
 set ruler
 set cursorline
