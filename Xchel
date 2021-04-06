@@ -21,7 +21,7 @@ compile)
 		${CC} -o bin/${TARGET} *.o
 		echo "C${R} binaries created"
 		echo "#!/bin/bash" > ${TARGET}.sh
-		echo "#cd bin" >> ${TARGET}.sh
+		echo "cd bin" >> ${TARGET}.sh
 		echo "./${TARGET}" >> ${TARGET}.sh
 		chmod +x ${TARGET}.sh
 		echo "C${R} executable created"
