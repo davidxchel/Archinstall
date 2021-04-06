@@ -1,0 +1,91 @@
+#!/bin/bash
+
+shopt -s extglob
+
+case $1 in
+
+compile)
+	echo "Checking languaje"
+	case 0 in
+	`ls src/ | egrep \.c[p]*$ > /dev/null; echo $?`)
+		R=`ls src/*.cpp > /dev/null && echo "++"`
+		echo "Using C"$R
+		CC="g++"
+
+		CFLAGS="-g -Wall"
+
+		TARGET=`pwd | rev | cut -d/ -f1 | rev`
+		if [ ! -d bin ]; then mkdir bin; else rm -r bin/*; fi
+		${CC} ${CFLAGS} -c src/*.cpp
+		echo "C${R} objects compiled"
+		${CC} -o bin/${TARGET} *.o
+		echo "C${R} binaries created"
+		echo "#!/bin/bash" > ${TARGET}.sh
+		echo "#cd bin" >> ${TARGET}.sh
+		echo "./${TARGET}" >> ${TARGET}.sh
+		chmod +x ${TARGET}.sh
+		echo "C${R} executable created"
+		if [ $2 -e "clean" ]; then rm *.o; echo "C${R} project cleaned"; fi
+		;;
+
+	`ls src/ | egrep \.java$ > /dev/null; echo $?`)
+		echo "Using Java"
+		JC="javac"
+		PATH_TO_FX="/lib/jvm/default/javafx"
+
+		MODP="--module-path ${PATH_TO_FX}/lib"
+		MODS="--add-modules javafx.controls,javafx.fxml"
+		CDIR="-d ../comp"
+		CP="-cp lib/*"
+		TARGET=`pwd | rev | cut -d/ -f1 | rev`
+		PACKS="Pack/MainController.java"
+
+		JX="jar cfe"
+		XJ="bin/${TARGET}.jar"
+		if [ ! -d bin ]; then mkdir bin; fi
+		if [ ! -d comp ]; then mkdir comp; else rm -r comp; mkdir comp; fi
+		cd src
+		echo "Executing:"
+		echo "	${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS}"
+		${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS}
+		echo "Java classes built"
+		cp -r Res ../comp
+		cp -r lib ../bin
+		mkdir ../bin/DB
+		cd ../comp
+		echo "Executing"
+		echo "	${JX} ../${XJ} ${TARGET} ."
+		${JX} ../${XJ} ${TARGET} .
+		echo "Java binaries created"
+		echo "Creating Java executable"
+		cd ..
+		echo "#!/bin/bash" > ${TARGET}.sh
+		echo "PATH_TO_FX="/lib/jvm/default/javafx"" >> ${TARGET}.sh
+		echo "cd bin" >> ${TARGET}.sh
+		echo "java ${MODP} ${MODS} ${CP}:${TARGET}.jar ${TARGET}" >> ${TARGET}.sh
+		chmod +x ${TARGET}.sh
+		echo "Java executable created"
+		if [ $2 -e "clean" ]; then rm -r comp; echo "Java project cleaned"; fi
+		;;
+
+	*)
+		echo "Main languaje not found"
+		;;
+	esac
+	;;
+
+clean)
+	if [ -d bin ]; then rm -r bin; fi
+	if [ -d comp ]; then rm -r comp; fi
+	if [ -d *.o ]; then rm *.o; fi
+	if [ -d *.sh ]; then rm *.sh; fi
+	;;
+
+create)
+	echo "Nothing can be done at the moment!"
+	;;
+
+*)
+	echo "Nothing can be done at the moment!"
+	;;
+esac
