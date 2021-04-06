@@ -1,91 +1,118 @@
 #!/bin/bash
 
 shopt -s extglob
-
 case $1 in
+code)
+   case $2 in
+   compile)
+	   echo "Checking languaje"
+	   case 0 in
+	   `ls src/ | egrep \.c[p]*$ > /dev/null; echo $?`)
+		   T=`ls src/*.cpp > /dev/null && echo "pp"`
+		   echo "Using C"$T
+		   echo "  Compiler: g++"
+		   CC="g++"
 
-compile)
-	echo "Checking languaje"
-	case 0 in
-	`ls src/ | egrep \.c[p]*$ > /dev/null; echo $?`)
-		R=`ls src/*.cpp > /dev/null && echo "++"`
-		echo "Using C"$R
-		CC="g++"
+		   echo "  Flags for debug: -g -Wall"
+		   CFLAGS="-g -Wall"
 
-		CFLAGS="-g -Wall"
+		   TARGET=`pwd | rev | cut -d/ -f1 | rev`
+		   echo "  Project name: ${TARGET}"
+		   echo "  Removing previous binaries"
+		   if [ ! -d bin ]; then mkdir bin; fi
+		   echo "  Compiling C${R} objects by executing:"
+		   echo "     ${CC} ${CFLAGS} -c src/*.c${T}"
+		   ${CC} ${CFLAGS} -c src/*.c${T} &&
+		   echo "  C${R} objects compiled"
+		   echo "  Creating C${R} binaries y executing:"
+		   echo "     ${CC} -o bin/${TARGET} *.o"
+		   ${CC} -o bin/${TARGET} *.o &&
+		   echo "  C${R} binaries created"
+		   echo "  Creating C${R} executable: ${TARGET}.sh"
+		   echo "#!/bin/bash" > ${TARGET}.sh
+		   echo "cd bin" >> ${TARGET}.sh
+		   echo "./${TARGET}" >> ${TARGET}.sh
+		   chmod +x ${TARGET}.sh
+		   echo "  C${T} executable created"
+		   if [ -n "$3" ]; then rm *.o && echo " C${T} project cleaned"; fi
+		   ;;
 
-		TARGET=`pwd | rev | cut -d/ -f1 | rev`
-		if [ ! -d bin ]; then mkdir bin; else rm -r bin/*; fi
-		${CC} ${CFLAGS} -c src/*.cpp
-		echo "C${R} objects compiled"
-		${CC} -o bin/${TARGET} *.o
-		echo "C${R} binaries created"
-		echo "#!/bin/bash" > ${TARGET}.sh
-		echo "cd bin" >> ${TARGET}.sh
-		echo "./${TARGET}" >> ${TARGET}.sh
-		chmod +x ${TARGET}.sh
-		echo "C${R} executable created"
-		if [ $2 -e "clean" ]; then rm *.o; echo "C${R} project cleaned"; fi
-		;;
+	   `ls src/ | egrep \.java$ > /dev/null; echo $?`)
+		   echo "Using Java"
+		   echo "  Using javac compiler"
+		   JC="javac"
+		   cd src; PACK=`ls -d !(lib|Res|*.java)`;
+		   echo "  Using ${PACK} directory for packages"
+		   cd ..
+		   cat src/**/*.java | grep javafx > /dev/null && MODP="--module-path ${PATH_TO_FX}/lib" &&
+		   echo "  Javafx detected, Using javafx module path" &&
+		   MODS="--add-modules javafx.controls,javafx.fxml" && echo "	 Adding javafx modules" &&
+		   PACKS="${PACK}/MainController.java" && echo "     Adding Main controller"
+		   echo "  Using comp/ as compiling directory"
+		   CDIR="-d ../comp"
+		   echo "  Adding libraries in src/lib to classpath"
+		   CP="-cp lib/*"
+		   TARGET=`pwd | rev | cut -d/ -f1 | rev`
+		   echo "  Project name: ${TARGET}"
 
-	`ls src/ | egrep \.java$ > /dev/null; echo $?`)
-		echo "Using Java"
-		JC="javac"
-		PATH_TO_FX="/lib/jvm/default/javafx"
+		   echo "  Using 'jar cfe' to compress project"
+		   JX="jar cfe"
+		   echo "  Setting project directory as bin/${TARGET}.jar"
+		   XJ="bin/${TARGET}.jar"
+		   echo "  Creating bin and comp directories if non existent"
+		   if [ ! -d bin ]; then mkdir bin; fi
+		   if [ ! -d comp ]; then mkdir comp; else rm -r comp; mkdir comp; fi
+		   cd src
+		   echo "  Compiling classes by executing:"
+		   echo "     ${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS}"
+		   ${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS} &&
+		   echo "  Java classes built"
+		   echo "  Copying resources and libraries to comp and bin directories"
+		   cp -r Res ../comp
+		   cp -r lib ../bin
+		   echo "  Creating DB directory if non existent"
+		   if [ ! -d ../bin/DB ]; then mkdir ../bin/DB; fi
+		   cd ../comp
+		   echo "  Compressing project by executing:"
+		   echo "     ${JX} ../${XJ} ${TARGET} ."
+		   ${JX} ../${XJ} ${TARGET} . &&
+		   echo "  Java binaries created"
+		   echo "  Creating Java executable"
+		   cd ..
+		   echo "#!/bin/bash" > ${TARGET}.sh
+		   echo "cd bin" >> ${TARGET}.sh
+		   echo "java ${MODP} ${MODS} ${CP}:${TARGET}.jar ${TARGET}" >> ${TARGET}.sh
+		   chmod +x ${TARGET}.sh
+		   echo "  Java executable created"
+		   if [ -n "$3" ]; then rm -r comp && echo "   Java project cleaned"; fi
+		   ;;
 
-		MODP="--module-path ${PATH_TO_FX}/lib"
-		MODS="--add-modules javafx.controls,javafx.fxml"
-		CDIR="-d ../comp"
-		CP="-cp lib/*"
-		TARGET=`pwd | rev | cut -d/ -f1 | rev`
-		PACKS="Pack/MainController.java"
+	   *)
+		   echo "Main languaje not found"
+		   ;;
+	   esac
+	   ;;
 
-		JX="jar cfe"
-		XJ="bin/${TARGET}.jar"
-		if [ ! -d bin ]; then mkdir bin; fi
-		if [ ! -d comp ]; then mkdir comp; else rm -r comp; mkdir comp; fi
-		cd src
-		echo "Executing:"
-		echo "	${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS}"
-		${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS}
-		echo "Java classes built"
-		cp -r Res ../comp
-		cp -r lib ../bin
-		mkdir ../bin/DB
-		cd ../comp
-		echo "Executing"
-		echo "	${JX} ../${XJ} ${TARGET} ."
-		${JX} ../${XJ} ${TARGET} .
-		echo "Java binaries created"
-		echo "Creating Java executable"
-		cd ..
-		echo "#!/bin/bash" > ${TARGET}.sh
-		echo "PATH_TO_FX="/lib/jvm/default/javafx"" >> ${TARGET}.sh
-		echo "cd bin" >> ${TARGET}.sh
-		echo "java ${MODP} ${MODS} ${CP}:${TARGET}.jar ${TARGET}" >> ${TARGET}.sh
-		chmod +x ${TARGET}.sh
-		echo "Java executable created"
-		if [ $2 -e "clean" ]; then rm -r comp; echo "Java project cleaned"; fi
-		;;
+   clean)
+	   rm -r bin
+	   rm -r comp
+	   rm *.o
+	   rm *.sh
+	   rm *.txt
+	   ;;
 
-	*)
-		echo "Main languaje not found"
-		;;
-	esac
-	;;
+   create)
+	   echo "Nothing can be done at the moment!"
+	   ;;
 
-clean)
-	if [ -d bin ]; then rm -r bin; fi
-	if [ -d comp ]; then rm -r comp; fi
-	if [ -d *.o ]; then rm *.o; fi
-	if [ -d *.sh ]; then rm *.sh; fi
-	;;
-
-create)
-	echo "Nothing can be done at the moment!"
-	;;
-
+   *)
+	   echo "Nothing can be done at the moment!"
+	   ;;
+   esac
+   ;;
 *)
-	echo "Nothing can be done at the moment!"
-	;;
+   echo "Nothing can be done at the moment!"
+   ;;
 esac
+
+exit 0
