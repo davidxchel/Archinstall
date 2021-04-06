@@ -13,7 +13,6 @@ set langmenu=es
 set wildmenu
 set lazyredraw
 set magic
-set foldcolumn=1
 syntax enable
 set encoding=utf8
 
@@ -25,10 +24,8 @@ set incsearch
 
 set autoindent
 set cindent
-set shiftwidth=3
 set smartindent
 set smarttab
-set softtabstop=3
  
 set ruler
 set cursorline
@@ -36,6 +33,7 @@ set cursorcolumn
 set relativenumber
 set mouse=a
 set title
+set list
 set listchars=tab:>~
 
 set undolevels=1000

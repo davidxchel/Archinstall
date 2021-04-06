@@ -70,7 +70,7 @@ code)
 		   echo "  Copying resources and libraries to comp and bin directories"
 		   cp -r Res ../comp
 		   cp -r lib ../bin
-		   echo "  Creating DB directory if non existent"
+		   cat **/*.java | grep sql > /dev/null && echo "  Use of databases found, creating DB directory if non existent" &&
 		   if [ ! -d ../bin/DB ]; then mkdir ../bin/DB; fi
 		   cd ../comp
 		   echo "  Compressing project by executing:"
