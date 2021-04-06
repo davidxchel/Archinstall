@@ -7,3 +7,4 @@ ln -s ${PWD}/vim ~/.vimrc
 ln -s ${PWD}/p10k ~/.p10k.zsh
 ln -s ${PWD}/profile ~/.profile
 ln -s ${PWD}/kitty ~/.config/kitty/kitty.conf
+ln -s ${PWD}/Xchel /usr/bin/Xchel
