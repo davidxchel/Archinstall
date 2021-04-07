@@ -1,7 +1,6 @@
 set number
-set linebreak
 set showbreak=+++
-set textwidth=100
+set wrap
 set showmatch
 set spell
 set errorbells
@@ -15,7 +14,6 @@ set lazyredraw
 set magic
 syntax enable
 set encoding=utf8
-
  
 set hlsearch
 set smartcase
