@@ -3,116 +3,169 @@
 shopt -s extglob
 case $1 in
 code)
-   case $2 in
-   compile)
-	   echo "Checking languaje"
-	   case 0 in
-	   `ls src/ | egrep \.c[p]*$ > /dev/null; echo $?`)
-		   T=`ls src/*.cpp > /dev/null && echo "pp"`
-		   echo "Using C"$T
-		   echo "  Compiler: g++"
-		   CC="g++"
+	case $2 in
+	compile)
+		echo "Checking languaje"
+		case 0 in
+		`ls src/ | egrep \.c[p]*$ > /dev/null; echo $?`)
+			T=`ls src/*.cpp > /dev/null && echo "pp"`
+			echo "Using C"$T
+			echo "  Compiler: g++"
+			CC="g++"
 
-		   echo "  Flags for debug: -g -Wall"
-		   CFLAGS="-g -Wall"
+			echo "  Flags for debug: -g -Wall"
+			CFLAGS="-g -Wall"
 
-		   TARGET=`pwd | rev | cut -d/ -f1 | rev`
-		   echo "  Project name: ${TARGET}"
-		   echo "  Removing previous binaries"
-		   if [ ! -d bin ]; then mkdir bin; fi
-		   echo "  Compiling C${R} objects by executing:"
-		   echo "     ${CC} ${CFLAGS} -c src/*.c${T}"
-		   ${CC} ${CFLAGS} -c src/*.c${T} &&
-		   echo "  C${R} objects compiled"
-		   echo "  Creating C${R} binaries y executing:"
-		   echo "     ${CC} -o bin/${TARGET} *.o"
-		   ${CC} -o bin/${TARGET} *.o &&
-		   echo "  C${R} binaries created"
-		   echo "  Creating C${R} executable: ${TARGET}.sh"
-		   echo "#!/bin/bash" > ${TARGET}.sh
-		   echo "cd bin" >> ${TARGET}.sh
-		   echo "./${TARGET}" >> ${TARGET}.sh
-		   chmod +x ${TARGET}.sh
-		   echo "  C${T} executable created"
-		   if [ -n "$3" ]; then rm *.o && echo " C${T} project cleaned"; fi
-		   ;;
+			TARGET=`pwd | rev | cut -d/ -f1 | rev`
+			echo "  Project name: ${TARGET}"
+			echo "  Removing previous binaries"
+			if [ ! -d bin ]; then mkdir bin; fi
+			echo "  Compiling C${R} objects by executing:"
+			echo "     ${CC} ${CFLAGS} -c src/*.c${T}"
+			${CC} ${CFLAGS} -c src/*.c${T} &&
+			echo "  C${R} objects compiled"
+			echo "  Creating C${R} binaries y executing:"
+			echo "     ${CC} -o bin/${TARGET} *.o"
+			${CC} -o bin/${TARGET} *.o &&
+			echo "  C${R} binaries created"
+			echo "  Creating C${R} executable: ${TARGET}.sh"
+			echo "#!/bin/bash" > ${TARGET}.sh
+			echo "cd bin" >> ${TARGET}.sh
+			echo "./${TARGET}" >> ${TARGET}.sh
+			chmod +x ${TARGET}.sh
+			echo "  C${T} executable created"
+			if [ -n "$3" ]; then rm *.o && echo " C${T} project cleaned"; fi
+			;;
 
-	   `ls src/ | egrep \.java$ > /dev/null; echo $?`)
-		   echo "Using Java"
-		   echo "  Using javac compiler"
-		   JC="javac"
-		   cd src; PACK=`ls -d !(lib|Res|*.java)`;
-		   echo "  Using ${PACK} directory for packages"
-		   cd ..
-		   cat src/**/*.java | grep javafx > /dev/null && MODP="--module-path ${PATH_TO_FX}/lib" &&
-		   echo "  Javafx detected, Using javafx module path" &&
-		   MODS="--add-modules javafx.controls,javafx.fxml" && echo "	 Adding javafx modules" &&
-		   PACKS="${PACK}/MainController.java" && echo "     Adding Main controller"
-		   echo "  Using comp/ as compiling directory"
-		   CDIR="-d ../comp"
-		   echo "  Adding libraries in src/lib to classpath"
-		   CP="-cp lib/*"
-		   TARGET=`pwd | rev | cut -d/ -f1 | rev`
-		   echo "  Project name: ${TARGET}"
+		`ls src/ | egrep \.java$ > /dev/null; echo $?`)
+			echo "Using Java"
+			echo "  Using javac compiler"
+			JC="javac"
+			cd src; PACK=`ls -d !(lib|Res|*.java)`;
+			echo "  Using ${PACK} directory for packages"
+			cd ..
+			cat src/**/*.java | grep javafx > /dev/null && MODP="--module-path ${PATH_TO_FX}/lib" &&
+			echo "  Javafx detected, Using javafx module path" &&
+			MODS="--add-modules javafx.controls,javafx.fxml" && echo "	 Adding javafx modules" &&
+			PACKS="${PACK}/MainController.java" && echo "     Adding Main controller"
+			echo "  Using comp/ as compiling directory"
+			CDIR="-d ../comp"
+			echo "  Adding libraries in src/lib to classpath"
+			CP="-cp lib/*"
+			TARGET=`pwd | rev | cut -d/ -f1 | rev`
+			echo "  Project name: ${TARGET}"
 
-		   echo "  Using 'jar cfe' to compress project"
-		   JX="jar cfe"
-		   echo "  Setting project directory as bin/${TARGET}.jar"
-		   XJ="bin/${TARGET}.jar"
-		   echo "  Creating bin and comp directories if non existent"
-		   if [ ! -d bin ]; then mkdir bin; fi
-		   if [ ! -d comp ]; then mkdir comp; else rm -r comp; mkdir comp; fi
-		   cd src
-		   echo "  Compiling classes by executing:"
-		   echo "     ${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS}"
-		   ${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS} &&
-		   echo "  Java classes built"
-		   echo "  Copying resources and libraries to comp and bin directories"
-		   cp -r Res ../comp
-		   cp -r lib ../bin
-		   cat **/*.java | grep sql > /dev/null && echo "  Use of databases found, creating DB directory if non existent" &&
-		   if [ ! -d ../bin/DB ]; then mkdir ../bin/DB; fi
-		   cd ../comp
-		   echo "  Compressing project by executing:"
-		   echo "     ${JX} ../${XJ} ${TARGET} ."
-		   ${JX} ../${XJ} ${TARGET} . &&
-		   echo "  Java binaries created"
-		   echo "  Creating Java executable"
-		   cd ..
-		   echo "#!/bin/bash" > ${TARGET}.sh
-		   echo "cd bin" >> ${TARGET}.sh
-		   echo "java ${MODP} ${MODS} ${CP}:${TARGET}.jar ${TARGET}" >> ${TARGET}.sh
-		   chmod +x ${TARGET}.sh
-		   echo "  Java executable created"
-		   if [ -n "$3" ]; then rm -r comp && echo "   Java project cleaned"; fi
-		   ;;
+			echo "  Using 'jar cfe' to compress project"
+			JX="jar cfe"
+			echo "  Setting project directory as bin/${TARGET}.jar"
+			XJ="bin/${TARGET}.jar"
+			echo "  Creating bin and comp directories if non existent"
+			if [ ! -d bin ]; then mkdir bin; fi
+			if [ ! -d comp ]; then mkdir comp; else rm -r comp; mkdir comp; fi
+			cd src
+			echo "  Compiling classes by executing:"
+			echo "     ${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS}"
+			${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS} &&
+			echo "  Java classes built"
+			echo "  Copying resources and libraries to comp and bin directories"
+			cp -r Res ../comp
+			cp -r lib ../bin
+			cat **/*.java | grep sql > /dev/null && echo "  Use of databases found, creating DB directory if non existent" &&
+			if [ ! -d ../bin/DB ]; then mkdir ../bin/DB; fi
+			cd ../comp
+			echo "  Compressing project by executing:"
+			echo "     ${JX} ../${XJ} ${TARGET} ."
+			${JX} ../${XJ} ${TARGET} . &&
+			echo "  Java binaries created"
+			echo "  Creating Java executable"
+			cd ..
+			echo "#!/bin/bash" > ${TARGET}.sh
+			echo "cd bin" >> ${TARGET}.sh
+			echo "java ${MODP} ${MODS} ${CP}:${TARGET}.jar ${TARGET}" >> ${TARGET}.sh
+			chmod +x ${TARGET}.sh
+			echo "  Java executable created"
+			if [ -n "$3" ]; then rm -r comp && echo "   Java project cleaned"; fi
+			;;
 
-	   *)
-		   echo "Main languaje not found"
-		   ;;
-	   esac
-	   ;;
+		*)
+			echo "Main languaje not found"
+			;;
+		esac
+		;;
 
-   clean)
-	   rm -r bin
-	   rm -r comp
-	   rm *.o
-	   rm *.sh
-	   rm *.txt
-	   ;;
+	clean)
+		rm -r bin
+		rm -r comp
+		rm *.o
+		rm *.sh
+		rm *.txt
+		;;
 
-   create)
-	   echo "Nothing can be done at the moment!"
-	   ;;
+	create)
+		PROJECT=`echo $3 | cut -d. -f1`
+		LAN=`echo $3 | cut -d. -f2`
+		if [ "$LAN" == "$TARGET" ]; then echo "Project name not found"; exit 1; fi
+		LAN=`echo "$LAN" | tr '[:upper:]' '[:lower:]'`
+		case $LAN in
+		"c")
+			echo "Checking if folder exists"
+			if [ -d $PROJECT ]; then echo "Folder $PROJECT already existent, remove it and try again"; exit 1; fi
+			mkdir -p $PROJECT/src/headers
+			echo "Creating main file"
+			echo "#include <stdio.h>" > $PROJECT/src/$PROJECT.$LAN
+			echo "#include \"headers/header.h\"" >> $PROJECT/src/$PROJECT.$LAN
+			echo "" >> $PROJECT/src/$PROJECT.$LAN
+			echo "int main()" >> $PROJECT/src/$PROJECT.$LAN
+			echo "{" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	printf(\"Hello world from the $LAN main program!!!\\n\");" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	printf(\"%s\\n\",sVar);" >> $PROJECT/src/$PROJECT.$LAN
+			echo "return 0;" >> $PROJECT/src/$PROJECT.$LAN
+			echo "}" >> $PROJECT/src/$PROJECT.$LAN
+			echo "Main file created"
+			echo "Creating header file"
+			echo "char sVar[]=\"And hello from a $LAN library!!\";" > $PROJECT/src/headers/header.h
+			echo "Header file created"
+			echo "$PROJECT project created in $LAN languaje"
+		;;
 
-   *)
-	   echo "Nothing can be done at the moment!"
-	   ;;
-   esac
-   ;;
+		"cpp")
+			echo "Checking if folder exists"
+			if [ -d $PROJECT ]; then echo "Folder $PROJECT already existent, remove it and try again"; exit 1; fi
+			mkdir -p $PROJECT/src/headers
+			echo "Creating main file"
+			echo "#include <cstdio>" > $PROJECT/src/$PROJECT.$LAN
+			echo "#include \"headers/header.hpp\"" >> $PROJECT/src/$PROJECT.$LAN
+			echo "" >> $PROJECT/src/$PROJECT.$LAN
+			echo "int main()" >> $PROJECT/src/$PROJECT.$LAN
+			echo "{" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	printf(\"Hello world from the $LAN main program!!!\\n\");" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	printf(\"%s\\n\",sVar);" >> $PROJECT/src/$PROJECT.$LAN
+			echo "return 0;" >> $PROJECT/src/$PROJECT.$LAN
+			echo "}" >> $PROJECT/src/$PROJECT.$LAN
+			echo "Main file created"
+			echo "Creating header file"
+			echo "char sVar[]=\"And hello from a $LAN library!!\";" > $PROJECT/src/headers/header.hpp
+			echo "Header file created"
+			echo "$PROJECT project created in $LAN languaje"
+		;;
+
+		"java")
+
+		;;
+		*)
+			echo "Programing languaje $LAN not available!"
+		;;
+		esac
+		;;
+
+	*)
+		echo "I don't understand how that works with coding!"
+		;;
+	esac
+	;;
+
 *)
-   echo "Nothing can be done at the moment!"
-   ;;
+	echo "I don't understand how that works!"
+	;;
 esac
-
 exit 0

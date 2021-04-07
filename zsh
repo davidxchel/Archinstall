@@ -2,6 +2,7 @@ alias ls='ls --color=auto'
 alias vi='vim'
 alias grub-update="sudo grub-mkconfig -o /boot/grub/grub.cfg"
 alias sudo='cowsay -f tux "If you have the power to continue, use it wisely"; sudo'
+alias clear="printf '\033[2J\033[3J\033[1;1H'"
 
 export Programs='/home/xchel/Documents/softshell'
 export Silicon='/home/xchel/Documents/Silicio'
