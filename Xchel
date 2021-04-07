@@ -1,6 +1,7 @@
 #!/bin/bash
 
 shopt -s extglob
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
 case $1 in
 code)
 	case $2 in
@@ -10,80 +11,80 @@ code)
 		`ls src/ | egrep \.c[p]*$ > /dev/null; echo $?`)
 			T=`ls src/*.cpp > /dev/null && echo "pp"`
 			echo "Using C"$T
-			echo "  Compiler: g++"
+			echo "	Compiler: g++"
 			CC="g++"
 
-			echo "  Flags for debug: -g -Wall"
+			echo "	Flags for debug: -g -Wall"
 			CFLAGS="-g -Wall"
 
 			TARGET=`pwd | rev | cut -d/ -f1 | rev`
-			echo "  Project name: ${TARGET}"
-			echo "  Removing previous binaries"
+			echo "	Project name: ${TARGET}"
+			echo "	Removing previous binaries"
 			if [ ! -d bin ]; then mkdir bin; fi
-			echo "  Compiling C${R} objects by executing:"
-			echo "     ${CC} ${CFLAGS} -c src/*.c${T}"
+			echo "	Compiling C${R} objects by executing:"
+			echo "		${CC} ${CFLAGS} -c src/*.c${T}"
 			${CC} ${CFLAGS} -c src/*.c${T} &&
-			echo "  C${R} objects compiled"
-			echo "  Creating C${R} binaries y executing:"
-			echo "     ${CC} -o bin/${TARGET} *.o"
+			echo "	C${R} objects compiled"
+			echo "	Creating C${R} binaries y executing:"
+			echo "		${CC} -o bin/${TARGET} *.o"
 			${CC} -o bin/${TARGET} *.o &&
-			echo "  C${R} binaries created"
-			echo "  Creating C${R} executable: ${TARGET}.sh"
+			echo "	C${R} binaries created"
+			echo "	Creating C${R} executable: ${TARGET}.sh"
 			echo "#!/bin/bash" > ${TARGET}.sh
 			echo "cd bin" >> ${TARGET}.sh
 			echo "./${TARGET}" >> ${TARGET}.sh
 			chmod +x ${TARGET}.sh
-			echo "  C${T} executable created"
+			echo "	C${T} executable created"
 			if [ -n "$3" ]; then rm *.o && echo " C${T} project cleaned"; fi
 			;;
 
 		`ls src/ | egrep \.java$ > /dev/null; echo $?`)
 			echo "Using Java"
-			echo "  Using javac compiler"
+			echo "	Using javac compiler"
 			JC="javac"
 			cd src; PACK=`ls -d !(lib|Res|*.java)`;
-			echo "  Using ${PACK} directory for packages"
+			echo "	Using ${PACK} directory for packages"
 			cd ..
-			cat src/**/*.java | grep javafx > /dev/null && MODP="--module-path ${PATH_TO_FX}/lib" &&
-			echo "  Javafx detected, Using javafx module path" &&
+			cat src/**/*.java 2> /dev/null | grep javafx > /dev/null && MODP="--module-path ${PATH_TO_FX}/lib" &&
+			echo "	Javafx detected, Using javafx module path" &&
 			MODS="--add-modules javafx.controls,javafx.fxml" && echo "	 Adding javafx modules" &&
 			PACKS="${PACK}/MainController.java" && echo "     Adding Main controller"
-			echo "  Using comp/ as compiling directory"
+			echo "	Using comp/ as compiling directory"
 			CDIR="-d ../comp"
-			echo "  Adding libraries in src/lib to classpath"
+			echo "	Adding libraries in src/lib to classpath"
 			CP="-cp lib/*"
 			TARGET=`pwd | rev | cut -d/ -f1 | rev`
-			echo "  Project name: ${TARGET}"
+			echo "	Project name: ${TARGET}"
 
-			echo "  Using 'jar cfe' to compress project"
+			echo "	Using 'jar cfe' to compress project"
 			JX="jar cfe"
-			echo "  Setting project directory as bin/${TARGET}.jar"
+			echo "	Setting project directory as bin/${TARGET}.jar"
 			XJ="bin/${TARGET}.jar"
-			echo "  Creating bin and comp directories if non existent"
+			echo "	Creating bin and comp directories if non existent"
 			if [ ! -d bin ]; then mkdir bin; fi
 			if [ ! -d comp ]; then mkdir comp; else rm -r comp; mkdir comp; fi
 			cd src
-			echo "  Compiling classes by executing:"
-			echo "     ${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS}"
+			echo "	Compiling classes by executing:"
+			echo "		${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS}"
 			${JC} ${MODP} ${MODS} ${CDIR} ${CP}: ${TARGET}.java ${PACKS} &&
-			echo "  Java classes built"
-			echo "  Copying resources and libraries to comp and bin directories"
-			cp -r Res ../comp
-			cp -r lib ../bin
+			echo "	Java classes built"
+			echo "	Copying resources and libraries to comp and bin directories"
+			cp -r * ../comp
+			rm ../comp/**/*.java ../comp/*.java
 			cat **/*.java | grep sql > /dev/null && echo "  Use of databases found, creating DB directory if non existent" &&
 			if [ ! -d ../bin/DB ]; then mkdir ../bin/DB; fi
 			cd ../comp
-			echo "  Compressing project by executing:"
-			echo "     ${JX} ../${XJ} ${TARGET} ."
+			echo "	Compressing project by executing:"
+			echo "		${JX} ../${XJ} ${TARGET} ."
 			${JX} ../${XJ} ${TARGET} . &&
-			echo "  Java binaries created"
-			echo "  Creating Java executable"
+			echo "	Java binaries created"
+			echo "	Creating Java executable"
 			cd ..
 			echo "#!/bin/bash" > ${TARGET}.sh
 			echo "cd bin" >> ${TARGET}.sh
 			echo "java ${MODP} ${MODS} ${CP}:${TARGET}.jar ${TARGET}" >> ${TARGET}.sh
 			chmod +x ${TARGET}.sh
-			echo "  Java executable created"
+			echo "	Java executable created"
 			if [ -n "$3" ]; then rm -r comp && echo "   Java project cleaned"; fi
 			;;
 
@@ -104,56 +105,117 @@ code)
 	create)
 		PROJECT=`echo $3 | cut -d. -f1`
 		LAN=`echo $3 | cut -d. -f2`
-		if [ "$LAN" == "$TARGET" ]; then echo "Project name not found"; exit 1; fi
+		if [ "$LAN" == "$PROJECT" ]; then PROJECT=`pwd | rev | cut -d/ -f1 | rev`; echo "Working from project $PROJECT"; cd ..; fi
 		LAN=`echo "$LAN" | tr '[:upper:]' '[:lower:]'`
+		echo "Checking if folder exists"
+		ls $PROJECT/* 2> /dev/null && echo "Folder $PROJECT not empty, try again" && exit 1;
 		case $LAN in
 		"c")
-			echo "Checking if folder exists"
-			if [ -d $PROJECT ]; then echo "Folder $PROJECT already existent, remove it and try again"; exit 1; fi
+			echo "Using C!!"
 			mkdir -p $PROJECT/src/headers
 			echo "Creating main file"
 			echo "#include <stdio.h>" > $PROJECT/src/$PROJECT.$LAN
 			echo "#include \"headers/header.h\"" >> $PROJECT/src/$PROJECT.$LAN
 			echo "" >> $PROJECT/src/$PROJECT.$LAN
-			echo "int main()" >> $PROJECT/src/$PROJECT.$LAN
-			echo "{" >> $PROJECT/src/$PROJECT.$LAN
+			echo "int main(){" >> $PROJECT/src/$PROJECT.$LAN
 			echo "	printf(\"Hello world from the $LAN main program!!!\\n\");" >> $PROJECT/src/$PROJECT.$LAN
-			echo "	printf(\"%s\\n\",sVar);" >> $PROJECT/src/$PROJECT.$LAN
-			echo "return 0;" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	hFun();;" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	return 0;" >> $PROJECT/src/$PROJECT.$LAN
 			echo "}" >> $PROJECT/src/$PROJECT.$LAN
 			echo "Main file created"
 			echo "Creating header file"
-			echo "char sVar[]=\"And hello from a $LAN library!!\";" > $PROJECT/src/headers/header.h
+			echo "struct HS{" > $PROJECT/src/headers/header.hp
+			echo "	char hChar[35];" >> $PROJECT/src/headers/header.hp
+			echo "	int hInt;" >> $PROJECT/src/headers/header.hp
+			echo "};" >> $PROJECT/src/headers/header.h
+			echo "" >> $PROJECT/src/headers/header.h
+			echo "void hFun(){" >> $PROJECT/src/headers/header.h
+			echo "	HS hVar={\"And hello from a $LAN library!!\",0};" >> $PROJECT/src/headers/header.h
+			echo "	printf(\"%d: %s\", hVar.hInt, hVar.hChar);" >> $PROJECT/src/headers/header.h
+			echo "}" >> $PROJECT/src/headers/header.h
 			echo "Header file created"
 			echo "$PROJECT project created in $LAN languaje"
 		;;
 
 		"cpp")
-			echo "Checking if folder exists"
-			if [ -d $PROJECT ]; then echo "Folder $PROJECT already existent, remove it and try again"; exit 1; fi
+			echo "Using C++!!"
 			mkdir -p $PROJECT/src/headers
 			echo "Creating main file"
 			echo "#include <cstdio>" > $PROJECT/src/$PROJECT.$LAN
 			echo "#include \"headers/header.hpp\"" >> $PROJECT/src/$PROJECT.$LAN
 			echo "" >> $PROJECT/src/$PROJECT.$LAN
-			echo "int main()" >> $PROJECT/src/$PROJECT.$LAN
-			echo "{" >> $PROJECT/src/$PROJECT.$LAN
+			echo "int main(){" >> $PROJECT/src/$PROJECT.$LAN
 			echo "	printf(\"Hello world from the $LAN main program!!!\\n\");" >> $PROJECT/src/$PROJECT.$LAN
-			echo "	printf(\"%s\\n\",sVar);" >> $PROJECT/src/$PROJECT.$LAN
-			echo "return 0;" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	hClass hObj;" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	hObj.hFun();" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	return 0;" >> $PROJECT/src/$PROJECT.$LAN
 			echo "}" >> $PROJECT/src/$PROJECT.$LAN
 			echo "Main file created"
 			echo "Creating header file"
-			echo "char sVar[]=\"And hello from a $LAN library!!\";" > $PROJECT/src/headers/header.hpp
+			echo "class hClass{" > $PROJECT/src/headers/header.hpp
+			echo "	char hChar[350];" >> $PROJECT/src/headers/header.hpp
+			echo "	int hInt;" >> $PROJECT/src/headers/header.hpp
+			echo "" >> $PROJECT/src/headers/header.hpp
+			echo "public:" >> $PROJECT/src/headers/header.hpp
+			echo "	hClass():hChar(\"And hello from a $LAN library!!\"),hInt(0){};" >> $PROJECT/src/headers/header.hpp
+			echo "	void hFun(){printf(\"%d: %s\", hInt, hChar);}" >> $PROJECT/src/headers/header.hpp
+			echo "};" >> $PROJECT/src/headers/header.hpp
 			echo "Header file created"
 			echo "$PROJECT project created in $LAN languaje"
 		;;
 
 		"java")
+			echo "Using java!!"
+			mkdir -p $PROJECT/src/pack
+			echo "	Creating main file"
+			echo "import pack.*;" > $PROJECT/src/$PROJECT.$LAN
+			echo "" >> $PROJECT/src/$PROJECT.$LAN
+			echo "public class $PROJECT{" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	public static void main(String[] args){" >> $PROJECT/src/$PROJECT.$LAN
+			echo "		System.out.println(\"Hello world from the $LAN main program!!!\");" >> $PROJECT/src/$PROJECT.$LAN
+			echo "		pclass.greeting();" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	}" >> $PROJECT/src/$PROJECT.$LAN
+			echo "}" >> $PROJECT/src/$PROJECT.$LAN
+			echo "	Main file created"
 
+			echo "	Creating package class file"
+			echo "package pack;" > $PROJECT/src/pack/pclass.$LAN
+			echo "" >> $PROJECT/src/pack/pclass.$LAN
+			echo "public class pclass{" >> $PROJECT/src/pack/pclass.$LAN
+			echo "	public static void greeting(){" >> $PROJECT/src/pack/pclass.$LAN
+			echo "		System.out.println(\"Greetings from a package class!\");" >> $PROJECT/src/pack/pclass.$LAN
+			echo "	}" >> $PROJECT/src/pack/pclass.$LAN
+			echo "}" >> $PROJECT/src/pack/pclass.$LAN
+			echo "	Package class file created"
+			echo "$PROJECT project created in $LAN languaje"
 		;;
+
+		py)
+			echo "Using python!!"
+			mkdir -p $PROJECT/mods/__init__
+			echo "	Creating main file"
+			echo "#!/bin/python" > $PROJECT/$PROJECT.$LAN
+			echo "" >> $PROJECT/$PROJECT.$LAN
+			echo "from mods.mod import sFun as mod;" >> $PROJECT/$PROJECT.$LAN
+			echo "" >> $PROJECT/$PROJECT.$LAN
+			echo "print(\"Hello world from a python program!!\")" >> $PROJECT/$PROJECT.$LAN
+			echo "mod()" >> $PROJECT/$PROJECT.$LAN
+			chmod +x $PROJECT/$PROJECT.$LAN
+			echo "	Main file created"
+
+			echo "	Creating package class file"
+			echo "def sFun():" > $PROJECT/mods/mod.$LAN
+			echo "	print(\"Hello, I'm a python module!!\")" >> $PROJECT/mods/mod.$LAN
+			echo "" >> $PROJECT/$PROJECT.$LAN
+			echo "if __name__ == \"__main__\":" >> $PROJECT/mods/mod.$LAN
+			echo "	print(\"I'm not a main program!!\")" >> $PROJECT/mods/mod.$LAN
+			chmod +x $PROJECT/mods/mod.$LAN
+			echo "	Package class file created"
+			echo "$PROJECT project created in $LAN languaje"
+		;;
+
 		*)
-			echo "Programing languaje $LAN not available!"
+			echo "Programing languaje $LAN not nderstood!"
 		;;
 		esac
 		;;
@@ -168,4 +230,5 @@ code)
 	echo "I don't understand how that works!"
 	;;
 esac
+echo "-----------------------------------------------------"
 exit 0
