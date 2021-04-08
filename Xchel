@@ -1,6 +1,7 @@
 #!/bin/bash
 
 shopt -s extglob
+shopt -s globstar
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
 case $1 in
 code)
@@ -16,18 +17,21 @@ code)
 
 			echo "	Flags for debug: -g -Wall"
 			CFLAGS="-g -Wall"
+			cat src/**/*\.* 2> /dev/null | grep gtk 2> /dev/null && CDEPS="pkg-config gtkmm-3.0 --cflags --libs" && echo "GTK detected, using gtk3"
+			cat src/**/*\.* 2> /dev/null | grep GL > /dev/null && CLIBS="-lm -lglut -lGL -lGLU" && echo "OpenGL detected, adding libraries"
 
 			TARGET=`pwd | rev | cut -d/ -f1 | rev`
 			echo "	Project name: ${TARGET}"
 			echo "	Removing previous binaries"
 			if [ ! -d bin ]; then mkdir bin; fi
 			echo "	Compiling C${R} objects by executing:"
-			echo "		${CC} ${CFLAGS} -c src/*.c${T}"
-			${CC} ${CFLAGS} -c src/*.c${T} &&
+			echo "		${CC} ${CFLAGS} ${CLIBS} \`${CDEPS}\` -c src/*.c${T}"
+			CDEPS=`${CDEPS}`
+			${CC} ${CFLAGS} ${CLIBS} ${CDEPS} -c src/*.c${T} &&
 			echo "	C${R} objects compiled"
 			echo "	Creating C${R} binaries y executing:"
 			echo "		${CC} -o bin/${TARGET} *.o"
-			${CC} -o bin/${TARGET} *.o &&
+			${CC} -o bin/${TARGET} *.o ${CLIBS} ${CDEPS} &&
 			echo "	C${R} binaries created"
 			echo "	Creating C${R} executable: ${TARGET}.sh"
 			echo "#!/bin/bash" > ${TARGET}.sh

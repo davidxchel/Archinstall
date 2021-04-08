@@ -23,6 +23,8 @@ export Silicon='/home/xchel/Documents/Silicio'
 export Web='/home/xchel/Documents/xchelnet'
 export Made='/home/xchel/Documents/softshell/Java/Madeni'
 
+shopt -s globstar
+shopt -s extglob
 
 Options=(alien armadillo atat atom C3PO cake cat dalek dolphin dragon fox fsm ghost ghostbusters happy-whale jellyfish llama link-windwaker nyan octopus owl r2d2 rocko seahorse stegosaurus turtle tux-big tux walter whale yoda yoshi)
 
