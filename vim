@@ -7,6 +7,8 @@ set errorbells
 set visualbell
 set autoread
 
+set tabstop=3
+set shiftwidth=3
 let $LANG='es'
 set langmenu=es
 set wildmenu

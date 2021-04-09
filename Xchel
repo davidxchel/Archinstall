@@ -74,6 +74,7 @@ code)
 			echo "	Java classes built"
 			echo "	Copying resources and libraries to comp and bin directories"
 			cp -r * ../comp
+			cp -r lib ../bin
 			rm ../comp/**/*.java ../comp/*.java
 			cat **/*.java | grep sql > /dev/null && echo "  Use of databases found, creating DB directory if non existent" &&
 			if [ ! -d ../bin/DB ]; then mkdir ../bin/DB; fi
