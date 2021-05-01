@@ -38,3 +38,9 @@ set listchars=tab:>~
 
 set undolevels=1000
 set backspace=eol,start,indent
+
+set grepprg=grep\ -nH\ $*
+let g:tex_flavor = "latex"
+set runtimepath=~/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,~/.vim/after
+autocmd VimEnter * NERDTree
+autocmd VimEnter * wincmd p
