@@ -44,3 +44,4 @@ let g:tex_flavor = "latex"
 set runtimepath=~/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,~/.vim/after
 autocmd VimEnter * NERDTree
 autocmd VimEnter * wincmd p
+autocmd VimEnter * wincmd 5>
