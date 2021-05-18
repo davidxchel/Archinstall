@@ -39,6 +39,7 @@ espeak
 espeak-ng
 espeakup
 etcher-bin
+exfat-utils
 fakeroot
 featherpad
 filezilla
@@ -187,6 +188,7 @@ ttf-nerd-fonts-symbols
 turbostat
 usbip
 vim
+vim-plugins
 vivaldi
 vivaldi-ffmpeg-codecs
 vlc
@@ -257,4 +259,3 @@ zsh
 zsh-completions
 zsh-lovers
 zsh-syntax-highlighting
-vim-plugins
