@@ -35,6 +35,7 @@ set mouse=a
 set title
 set list
 set listchars=tab:>~
+set noexpandtab
 
 set undolevels=1000
 set backspace=eol,start,indent
@@ -44,3 +45,4 @@ let g:tex_flavor = "latex"
 set runtimepath=~/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,~/.vim/after
 autocmd VimEnter * NERDTree
 autocmd VimEnter * wincmd p
+autocmd VimEnter * set noexpandtab
