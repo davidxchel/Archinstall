@@ -46,3 +46,4 @@ set runtimepath=~/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,~/.vim/afte
 autocmd VimEnter * NERDTree
 autocmd VimEnter * wincmd p
 autocmd VimEnter * set noexpandtab
+autocmd VimEnter * set ignorecase
