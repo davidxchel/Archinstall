@@ -105,6 +105,7 @@ code)
 		rm *.o
 		rm *.sh
 		rm *.txt
+		rm *cache*
 		;;
 
 	create)
@@ -197,7 +198,8 @@ code)
 
 		py)
 			echo "Using python!!"
-			mkdir -p $PROJECT/mods/__init__
+			mkdir -p $PROJECT/mods
+			touch $PROJECT/mods/__init__
 			echo "	Creating main file"
 			echo "#!/bin/python" > $PROJECT/$PROJECT.$LAN
 			echo "" >> $PROJECT/$PROJECT.$LAN
